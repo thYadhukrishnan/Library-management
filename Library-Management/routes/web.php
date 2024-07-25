@@ -30,4 +30,13 @@ Route::group(['middleware' => 'AdminAuthCheck'],function(){
 
     Route::post('saveCategory',[AdminController::class,'saveCategory'])->name('saveCategory');
     
+    Route::get('categoryList',[AdminController::class,'categoryList'])->name('categoryList');
+
+    Route::get('deleteCategory',[AdminController::class,'deleteCategory'])->name('deleteCategory');
+
+    Route::post('getCategoryData',[AdminController::class,'getCategoryData'])->name('getCategoryData');
+
+    Route::post('editCategorySave',[AdminController::class,'editCategorySave'])->name('editCategorySave');
+
+    
 });
