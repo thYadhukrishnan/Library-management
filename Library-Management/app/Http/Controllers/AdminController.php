@@ -2,23 +2,50 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
+use App\Models\Book;
 use Illuminate\Http\Request;
 use App\Models\BookCategory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
-    public function booksView(){
+    public function booksView(Request $request){
+        $userId = Auth::id();
+        $from = $request->has('from') ? $request->input('from') : '';
+        $categoryID = $request->has('category') ? $request->input('category') : '';
+        $authorID = $request->has('author') ? $request->input('author') : '';
 
-        return view('booksView');
+        $booksData = DB::table('books')
+                        ->join('books_category as cat','cat.id','=','books.CategoryID')
+                        ->join('book_authors as ath','ath.id','=','books.AuthorID')
+                        ->leftJoin('users','users.id','=','books.BorrowedID')
+                        ->select('books.id','books.book_name','cat.book_category_name',
+                                'ath.author_name','users.name');
+            if($from == 'filter'){
+                if(!empty($category)){
+                    $booksData->where('books.CategoryID',$category);
+                }
+                if(!empty($author)){
+                    $booksData->where('books.AuthorID',$author);
+                }
+            }
+        $booksData = $booksData->get();
+
+        $bookCategoryData = BookCategory::where('AddByID',$userId)->get();
+        $authorData = Author::where('AddByID',$userId)->get();
+        
+        return view('booksView',compact('booksData','bookCategoryData','authorData','categoryID','authorID'));
     }
 
     public function addBookView(){
         $userId = Auth::id();
 
         $bookCategoryData = BookCategory::where('AddByID',$userId)->get();
+        $authorData = Author::where('AddByID',$userId)->get();
 
-        return view('addBookView',compact('bookCategoryData'));
+        return view('addBookView',compact('bookCategoryData','authorData'));
     }
 
     public function saveCategory(Request $request){
@@ -88,5 +115,125 @@ class AdminController extends Controller
         }else{
             return redirect()->route('categoryList')->with('message','Category Name Alredy Taken.');
         }
+    }
+
+    public function authorList(){
+        $userId = Auth::id();
+        $authorData = Author::where('AddByID',$userId)->get();
+        return view('authorList',compact('authorData'));
+    }
+
+    public function addAuthorSave(Request $request){
+        $authorName = trim($request->input('bookAuthor'));
+        $userId = Auth::id();
+
+        $author = new Author();
+        $author->author_name = $authorName;
+        $author->AddByID = $userId;
+        $author->save();
+        return redirect()->route('authorList')->with('message','Author Added Succesfully');
+    }
+
+    public function getAuthorDetails(Request $request){
+        $authorId = $request->input('authorId');
+        $userId = Auth::id();
+        $authorData = Author::where('id',$authorId)
+                                // ->where('AddByID',$userId)
+                                ->first();
+        return response()->json([
+            'authorData' => $authorData,
+        ]);
+    }
+
+    public function editAuthorSave(Request $request){
+        $authorName = trim($request->input('bookAuthorEdit'));
+        $authorID   = $request->input('authorIDEdit');
+
+        $author = Author::where('author_name',$authorName)
+                            ->where('id','!=',$authorID)
+                            ->first();
+        if(empty($author)){
+            Author::where('id',$authorID)
+                    // ->where('AddByID',$userId)
+                    ->update([
+                        'author_name'=>$authorName,
+                    ]);
+            return redirect()->route('authorList')->with('message','Author Saved Successfully.');
+        }else{
+            return redirect()->route('authorList')->with('message','Author Alredy Exist.');
+        }
+    }
+
+    public function bookSave(Request $request){
+        $userId = Auth::id();
+
+        $bookName = $request->input('bookName');
+        $categoryID = $request->input('category');
+        $authorID = $request->input('author');
+
+        $books = new Book();
+        $books->book_name = $bookName;
+        $books->CategoryID = $categoryID;
+        $books->AuthorID = $authorID;
+        $books->AddByID = $userId;
+        $books->save();
+
+        return redirect()->route('booksView')->with('message','Book Added Succesfully');
+    }
+
+    public function deleteAuthor(Request $request){
+        $authorID = $request->input('id');
+
+        $author = Author::where('id',$authorID)->first();
+        if(!empty($author)){
+            $author->delete();
+            return redirect()->route('authorList')->with('message','Author Deleted');
+        }else{
+            return redirect()->route('authorList')->with('message','Author Not Found');
+        }
+    }
+
+    public function deleteBook(Request $request){
+        $bookId = $request->input('id');
+
+        $books = Book::where('id',$bookId)->first();
+        if(!empty($books)){
+            $books->delete();
+            return redirect()->route('booksView')->with('message','Book Deleted');
+        }else{
+            return redirect()->route('booksView')->with('message','Book Not Found');
+        }
+    }
+
+    public function editBookView(Request $request){
+        $bookId = $request->input('id');
+        $userId = Auth::id();
+
+        $books = Book::where('id',$bookId)->first();
+
+        if(!empty($books)){
+            $bookCategoryData = BookCategory::where('AddByID',$userId)->get();
+            $authorData = Author::where('AddByID',$userId)->get();
+
+            return view('editBookView',compact('books','bookCategoryData','authorData'));
+        }else{
+            return redirect()->view('booksView')->with('message','Book Not Found.');
+        }
+    }
+
+    public function editBookSave(Request $request){
+     
+        $bookName = $request->input('bookName');
+        $categoryID = $request->input('category');
+        $authorID = $request->input('author');
+        $bookID   = $request->input('bookID');
+
+        $books = Book::where('id',$bookID)->first();
+        $books->book_name = $bookName;
+        $books->CategoryID = $categoryID;
+        $books->AuthorID = $authorID;
+        $books->save();
+
+        return redirect()->route('booksView')->with('message','Book Edited Succesfully');
     }
 }

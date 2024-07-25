@@ -14,12 +14,18 @@
 </head>
 <body>  
     <div class="container">
+        @if(session('message'))
+        <div class="alert alert-success" role="alert" id="successDiv">
+          {{session('message')}}
+        </div>
+        @endif
         <div class="row">
             <div class="col-sm-4"></div>
             <div class="col-sm-4">
                 <div class="row pt-5">
-                    <h3>Admin Log In</h3>
-                    <form action="{{route('login')}}" method="POST">
+                    <h3>User Log In</h3>
+
+                    <form action="{{route('userLogin')}}" method="POST">
                         @csrf
                         <div class="form-group">
                             <label>Email :</label>
@@ -35,7 +41,8 @@
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
                         <div class="row">
-                            <a href="{{route('userLoginView')}}">User Login</a>
+                            <h5>Not a user </h5>
+                            <a href="{{route('userRegisterView')}}">Register</a>
                         </div>
     
                     </form>

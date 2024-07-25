@@ -18,9 +18,15 @@
             <div class="col-sm-4"></div>
             <div class="col-sm-4">
                 <div class="row pt-5">
-                    <h3>Admin Log In</h3>
-                    <form action="{{route('login')}}" method="POST">
+                    <h3>Register</h3>
+
+                    <form action="{{route('userRegister')}}" method="POST">
                         @csrf
+                        <div class="form-group">
+                            <label>Name :</label>
+                            <input type="text" name="name" class="form-control" id="name" placeholder="name" required>
+                        </div>
+
                         <div class="form-group">
                             <label>Email :</label>
                             <input type="email" name="email" class="form-control" id="email" placeholder="email" required>
@@ -34,11 +40,10 @@
                         <div class="row pt-3 px-2">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
-                        <div class="row">
-                            <a href="{{route('userLoginView')}}">User Login</a>
-                        </div>
-    
                     </form>
+                    <div class="row">
+                        <a href="{{route('userLoginView')}}">Log In</a>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-4"></div>

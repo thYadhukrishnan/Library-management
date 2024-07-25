@@ -19,13 +19,13 @@
             <div class="collapse navbar-collapse" id="navbarText">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                  <a class="nav-link" href="#">Books</a>
+                  <a class="nav-link" href="{{route('booksView')}}">Books</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Category</a>
+                  <a class="nav-link" href="{{route('categoryList')}}">Category</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Authos</a>
+                  <a class="nav-link" href="{{route('authorList')}}">Authors</a>
                 </li>
               </ul>
               <div>

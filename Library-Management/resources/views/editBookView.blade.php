@@ -8,14 +8,15 @@
 
     <div class="container px-0">
       <div class="row">
-        <h2>Add Book </h2>
+        <h2>Edit Book </h2>
       </div>
-      <form action="{{route('bookSave')}}" method="post">
+      <form action="{{route('editBookSave')}}" method="post">
         @csrf
         <div class="form-group row pt-3">
             <label class="col-sm-2">Book Name :</label>
             <div class="col-sm-4"> 
-              <input  type="text" name="bookName" class="form-control" id="bookName" placeholder="" required>
+              <input  type="text" name="bookName" class="form-control" id="bookName" value="{{$books->book_name}}" required>
+              <input  type="text" name="bookID" class="form-control" id="bookID" value="{{$books->id}}">
             </div>
         </div>
 
@@ -23,9 +24,9 @@
           <label class="col-sm-2">Book Category :</label>
           <div class="col-sm-4">
             <select class="form-select " name="category" id="category" required>
-              <option value="" selected>--Category--</option>
+              <option value="">--Category--</option>
               @foreach ($bookCategoryData as $category)
-                <option value="{{$category->id}}">{{$category->book_category_name}}</option>
+                <option value="{{$category->id}}" {{$books->CategoryID == $category->id ? 'selected' : '' }}>{{$category->book_category_name}}</option>
               @endforeach
             </select>
           </div>
@@ -42,9 +43,9 @@
         <label class="col-sm-2">Book Author :</label>
         <div class="col-sm-4">
           <select class="form-select " name="author" required>
-            <option value="" selected>--Author--</option>
+            <option value="">--Author--</option>
             @foreach ($authorData as $author)
-              <option value="{{$author->id}}">{{$author->author_name}}</option>
+              <option value="{{$author->id}}" {{$books->AuthorID == $author->id ? 'selected' : '' }}>{{$author->author_name}}</option>
             @endforeach
           </select>
         </div>
