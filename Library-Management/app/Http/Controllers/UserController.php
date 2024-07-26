@@ -26,6 +26,12 @@ class UserController extends Controller
                 }else{
                     $book->UsableBook = 'false';
                 }
+
+                if($book->BorrowedID == $userId){
+                    $book->bookBorrowed = 'true';
+                }else{
+                    $book->bookBorrowed = 'false';
+                }
             }
         }
         return view('borrowBooksView',compact('booksData'));
@@ -45,6 +51,7 @@ class UserController extends Controller
             return response()->json([
                 'status'=>'true',
                 'message' => 'Book Borrowed SuccessFully',
+                'action' => 'Return',
             ]);
         }else{
             Book::where('id',$bookID)
@@ -55,6 +62,7 @@ class UserController extends Controller
             return response()->json([
                 'status'=>'true',
                 'message' => 'Book Returned SuccessFully',
+                'action'  => 'Borrow',
             ]);
         }
     }

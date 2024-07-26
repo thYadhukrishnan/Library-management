@@ -66,17 +66,21 @@
                       @if($books->UsableBook == 'true')
                       <div class="row pe-2" style="justify-content: end">
                         <div class="form-check" style="display: flex; justify-content:end;">
-                          <input class="form-check-input borrowBook" type="radio" name="borrowBook{{$loop->iteration}}" id="borrowBook" value="borrow" data-bookid ={{$books->id}}>
-                          <label class="form-check-label ps-1">
+                          <input class="form-check-input borrowBook" type="checkbox" name="borrowBook{{$loop->iteration}}" id="borrowBook" value="borrow" data-bookid ={{$books->id}} {{$books->bookBorrowed == 'true' ? 'checked' : ''}}>
+                          <label class="form-check-label ps-1 borrowLabel">
+                            @if($books->bookBorrowed == 'true')
+                            Return
+                            @else
                             Borrow
+                            @endif
                           </label>
                         </div>
-                        <div class="form-check" style="display: flex; justify-content:end;">
+                        {{-- <div class="form-check" style="display: flex; justify-content:end;">
                           <input class="form-check-input borrowBook" type="radio" name="borrowBook{{$loop->iteration}}" id="borrowBook" value="return" data-bookid ={{$books->id}}>
                           <label class="form-check-label ps-2" for="flexRadioDefault2">
                             Return
                           </label>
-                        </div>
+                        </div> --}}
                       </div>
                       @else
                       <p style="text-align: end;">This Book Alredy Borrowed by another user</p>
@@ -97,7 +101,16 @@
     <script>
       $(document).ready(function(){
         $('.borrowBook').click(function(){
-          var action = $(this).val();
+          var action = '';
+          var element = $(this).parent().find('.borrowLabel');
+
+        if($(this).is(':checked')){
+          action = 'borrow';
+
+        }else{
+          action = 'return';
+        }
+          // var action = $(this).val();
           var bookID = $(this).data('bookid');
 
           $.ajax({
@@ -114,6 +127,7 @@
               if(response.status =='true'){
                 $('#borrowSuccessDiv').html(response.message);
                 $('#borrowSuccessDiv').show();
+                element.html(response.action);
                 setTimeout(() => {
                   $('#borrowSuccessDiv').html('');
                   $('#borrowSuccessDiv').hide();
