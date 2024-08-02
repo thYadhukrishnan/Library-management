@@ -57,6 +57,7 @@ Route::group(['middleware' => 'AdminAuthCheck'],function(){
 
     Route::post('editBookSave',[AdminController::class,'editBookSave'])->name('editBookSave');
 
+    Route::get('bookHistoryView',[AdminController::class,'bookHistoryView'])->name('bookHistoryView');
 
 });
 

@@ -6,6 +6,8 @@ use App\Models\Author;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use App\Models\BookCategory;
+use App\Models\BookHistory;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -16,6 +18,7 @@ class AdminController extends Controller
         $from = $request->has('from') ? $request->input('from') : '';
         $categoryID = $request->has('category') ? $request->input('category') : '';
         $authorID = $request->has('author') ? $request->input('author') : '';
+        $borrowedBy = $request->has('borrowedBy') ? $request->input('borrowedBy') : '';
 
         $booksData = DB::table('books')
                         ->join('books_category as cat','cat.id','=','books.CategoryID')
@@ -24,19 +27,23 @@ class AdminController extends Controller
                         ->select('books.id','books.book_name','cat.book_category_name',
                                 'ath.author_name','users.name');
             if($from == 'filter'){
-                if(!empty($category)){
-                    $booksData->where('books.CategoryID',$category);
+                if(!empty($categoryID)){
+                    $booksData->where('books.CategoryID',$categoryID);
                 }
-                if(!empty($author)){
-                    $booksData->where('books.AuthorID',$author);
+                if(!empty($authorID)){
+                    $booksData->where('books.AuthorID',$authorID);
+                }
+                if(!empty($borrowedBy)){
+                    $booksData->where('books.BorrowedID',$borrowedBy);
                 }
             }
-        $booksData = $booksData->get();
+        $booksData = $booksData->paginate(2);
 
         $bookCategoryData = BookCategory::where('AddByID',$userId)->get();
         $authorData = Author::where('AddByID',$userId)->get();
+        $userData = User::where('role','!=','admin')->get();
         
-        return view('booksView',compact('booksData','bookCategoryData','authorData','categoryID','authorID'));
+        return view('booksView',compact('booksData','bookCategoryData','authorData','categoryID','authorID','userData','borrowedBy'));
     }
 
     public function addBookView(){
@@ -235,5 +242,15 @@ class AdminController extends Controller
         $books->save();
 
         return redirect()->route('booksView')->with('message','Book Edited Succesfully');
+    }
+
+    public function bookHistoryView(){
+
+        $bookHistory = DB::table('book_history as his')
+                        ->join('users','users.id','=','his.BorrowedID')
+                        ->paginate(15);
+
+
+        return view('bookHistoryView',compact('bookHistory'));
     }
 }

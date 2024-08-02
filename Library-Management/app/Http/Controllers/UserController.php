@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BookHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Book;
-
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -48,6 +49,12 @@ class UserController extends Controller
                 ->update([
                     'BorrowedID'=>$userId,
                 ]);
+            $history = new BookHistory();
+            $history->Borrowed_date = Carbon::now();
+            $history->BookID        = $bookID;
+            $history->BorrowedID    = $userId;
+            $history->save();
+
             return response()->json([
                 'status'=>'true',
                 'message' => 'Book Borrowed SuccessFully',
@@ -58,6 +65,15 @@ class UserController extends Controller
             ->update([
                 'BorrowedID'=>0,
             ]);
+
+            $history = BookHistory::where('BookID',$bookID)
+                                    ->where('BorrowedID',$userId)
+                                    ->orderBy('created_at','desc')
+                                    ->first();
+            if(!empty($history)){
+                $history->Returned_date = Carbon::now();
+                $history->save();
+            }      
 
             return response()->json([
                 'status'=>'true',

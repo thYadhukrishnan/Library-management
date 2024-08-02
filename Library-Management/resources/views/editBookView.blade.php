@@ -16,7 +16,7 @@
             <label class="col-sm-2">Book Name :</label>
             <div class="col-sm-4"> 
               <input  type="text" name="bookName" class="form-control" id="bookName" value="{{$books->book_name}}" required>
-              <input  type="text" name="bookID" class="form-control" id="bookID" value="{{$books->id}}">
+              <input  type="hidden" name="bookID" class="form-control" id="bookID" value="{{$books->id}}">
             </div>
         </div>
 

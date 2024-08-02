@@ -37,7 +37,7 @@
                   @if(!$booksData->isEmpty())
                   @foreach($booksData as $books)
                   <tr>
-                    <th scope="row">{{$loop->iteration}}</th>
+                    <th scope="row">{{$booksData->firstItem() + $loop->index}}</th>
                     <td>{{$books->book_name}}</td>
                     <td>{{$books->book_category_name}}</td>
                     <td>{{$books->author_name}}</td>
@@ -70,6 +70,9 @@
                   @endif
                 </tbody>
               </table>
+              <div class="d-flex justify-content-end">
+                {{ $booksData->links() }}
+            </div>
         </div>
     </div>
 
@@ -107,6 +110,19 @@
                 </select>
               </div>
           </div>
+
+          <div class="form-group row pt-3">
+            <label class="col-sm-4">Borrowed By :</label>
+            <div class="col-sm-8">
+              <select class="form-select " name="borrowedBy">
+                <option value="" selected>--User--</option>
+                @foreach ($userData as $user)
+                  <option value="{{$user->id}}" {{$borrowedBy == $user->id ? 'selected' : '' }}>{{$user->name}}</option>
+                @endforeach
+              </select>
+            </div>
+        </div>
+
           </div>
           <div class="modal-footer">
             <input type="hidden" name="from" value="filter">

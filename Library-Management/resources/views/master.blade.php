@@ -27,6 +27,9 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{{route('authorList')}}">Authors</a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{route('bookHistoryView')}}">Book History</a>
+                </li>
               </ul>
               <div>
                 <a href="{{route('logout')}}" class="btn btn-primary">Logout</a>
